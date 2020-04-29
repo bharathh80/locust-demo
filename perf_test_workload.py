@@ -18,7 +18,8 @@ Import statements explanation
 HttpLocust
 -----------
 There are 2 primary locust clients that can be invoked. The default is
-HTTPLocust. The other is the lite version of the client. Use this sparingly.
+HTTPLocust. The other is the lite version of the client (FastHttpLocust)
+Use this sparingly.
 
 The default client can perform all the standard HTTP operations. It handles
 the standard components of a HTTP request and response such as headers,
@@ -54,9 +55,64 @@ optional - but it is good to override this
 
 class ApiPerfWorkload(TaskSet):
     """ This class defines the workload for the API tests """
-    pass
+
+    def on_start(self):
+        """ Define any setup here """
+        pass
+
+    def on_stop(self):
+        """ Define any teardown steps here. Usually goes at the bottom but keeping
+            it here for visibility """
+        pass
+
+    @task(1)
+    def get_pasta_recipes(self):
+        # Create a GET Request
+        response = self.client.get(
+            "/api/?q=pasta",
+            name="Find all pasta recipes"
+        )
+        # I can assert using the builtin assert library or I can do
+        if response.status_code != 200:
+            print(response.text)
+            import sys
+            sys.exit(1)
+
+        # Else Do something with the response object
+
+
+    @task(2)     # Run this task twice as much as the base 1
+    def get_recipes_with_ingredients(self):
+        # Create a GET Request
+        response = self.client.get(
+            "/api/?i=onion",
+            name="Find all recipes with onions in them"
+        )
+        # I can assert using the builtin assert library or I can do
+        if response.status_code != 200:
+            print(response.text)
+            import sys
+            sys.exit(1)
+
+        # Else Do something with the response object
 
 
 class LocustClientDemo(HttpLocust):
-    """ This class defines the perf test settings. """
-    pass
+    """ This class defines the perf test settings """
+
+    # To run from your local machine uncomment the lines below
+    # These ensure that your machine can perform enough i/o operations
+    import resource
+    resource.setrlimit(resource.RLIMIT_NOFILE, (10240, 9223372036854775807))
+
+    # Test settings
+    wait_time = between(0.5, 3)
+    host = "http://www.recipepuppy.com" # It is good to set your host separately from the
+                                        # from the rest of the URL so that in case the env
+                                        # changes but the rest is the same it is easy to
+                                        # maintain the code
+
+    task_set = ApiPerfWorkload          # Call the workload (TaskSet class) to run here
+
+
+
