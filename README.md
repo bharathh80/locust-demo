@@ -1,5 +1,4 @@
-# locust-demo
-
+## About this repo - locust-demo
 This is a demo project that shows how to get started using Locust as a performance testing tool.
 
 This project will show steps on how to run tests vs apis and web pages. There is boilerplate code here as well that 
@@ -9,6 +8,11 @@ I have added dependencies for this project in the requirements.txt file
 
 Do check the official page of [Locust](https://www.locust.io) for further details
 
+## Requirements to run this tool
+Python 3.x (3.6 and above would work)
+LocustIO and its dependencies (should work when you run the requirements.txt file)
+
+## Starting a locust test
 To run this from your local machine (once you have locust installed on your machine or preferably virtual env)
 
 The command below states that  
